@@ -16,38 +16,43 @@ var defaultOptions = {
 module.exports = {
   name: 'ember-bootstrap',
 
-  included: function included(app) {
-    // workaround for https://github.com/ember-cli/ember-cli/issues/3718
-    if (typeof app.import !== 'function' && app.app) {
-      app = app.app;
-    }
-    this.app = app;
+  included: function included(app, parentAddon) {
+    this._super.included.apply(this, arguments);
 
-    var options = extend(defaultOptions, app.options['ember-bootstrap']);
-    var bootstrapPath = path.join(app.bowerDirectory, 'bootstrap/dist');
+    var target = parentAddon || app;
+
+    if (target.app) {
+      target = target.app;
+    }
+    target.options = target.options || {};
+
+    this.app = target;
+
+    var options = extend(defaultOptions, target.options['ember-bootstrap']);
+    var bootstrapPath = path.join(target.bowerDirectory, 'bootstrap/dist');
 
     // Import css from bootstrap
     if (options.importBootstrapCSS) {
-      app.import(path.join(bootstrapPath, 'css/bootstrap.css'));
-      app.import(path.join(bootstrapPath, 'css/bootstrap.css.map'), {destDir: 'assets'});
+      target.import(path.join(bootstrapPath, 'css/bootstrap.css'));
+      target.import(path.join(bootstrapPath, 'css/bootstrap.css.map'), {destDir: 'assets'});
     }
 
     if (options.importBootstrapTheme) {
-      app.import(path.join(bootstrapPath, 'css/bootstrap-theme.css'));
-      app.import(path.join(bootstrapPath, 'css/bootstrap-theme.css.map'), {destDir: 'assets'});
+      target.import(path.join(bootstrapPath, 'css/bootstrap-theme.css'));
+      target.import(path.join(bootstrapPath, 'css/bootstrap-theme.css.map'), {destDir: 'assets'});
     }
 
     // Import glyphicons
     if (options.importBootstrapFont) {
-      app.import(path.join(bootstrapPath, 'fonts/glyphicons-halflings-regular.eot'), {destDir: '/fonts'});
-      app.import(path.join(bootstrapPath, 'fonts/glyphicons-halflings-regular.svg'), {destDir: '/fonts'});
-      app.import(path.join(bootstrapPath, 'fonts/glyphicons-halflings-regular.ttf'), {destDir: '/fonts'});
-      app.import(path.join(bootstrapPath, 'fonts/glyphicons-halflings-regular.woff'), {destDir: '/fonts'});
-      app.import(path.join(bootstrapPath, 'fonts/glyphicons-halflings-regular.woff2'), {destDir: '/fonts'});
+      target.import(path.join(bootstrapPath, 'fonts/glyphicons-halflings-regular.eot'), {destDir: '/fonts'});
+      target.import(path.join(bootstrapPath, 'fonts/glyphicons-halflings-regular.svg'), {destDir: '/fonts'});
+      target.import(path.join(bootstrapPath, 'fonts/glyphicons-halflings-regular.ttf'), {destDir: '/fonts'});
+      target.import(path.join(bootstrapPath, 'fonts/glyphicons-halflings-regular.woff'), {destDir: '/fonts'});
+      target.import(path.join(bootstrapPath, 'fonts/glyphicons-halflings-regular.woff2'), {destDir: '/fonts'});
     }
 
     if (!process.env.EMBER_CLI_FASTBOOT) {
-      app.import('vendor/transition.js');
+      target.import('vendor/transition.js');
     }
   },
 
